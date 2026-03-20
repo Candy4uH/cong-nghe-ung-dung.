@@ -1,0 +1,23 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio / VS Code workspace files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / ReSharper
+.idea/
+*.sln.iml
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
