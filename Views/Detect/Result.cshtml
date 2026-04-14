@@ -1,0 +1,141 @@
+@model DetectResultViewModel
+
+@{
+    ViewData["Title"] = "Detection result";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Detection result</h1>
+        <p class="text-muted mb-0">
+            File: <strong>@Model.FileName</strong> | Processing time: <strong>@Model.ProcessingTimeMs ms</strong>
+        </p>
+    </div>
+    <a class="btn btn-primary" asp-controller="Detect" asp-action="Upload">Detect another image</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">
+                <h2 class="h5 mb-0">Image preview</h2>
+            </div>
+            <div class="card-body">
+                <div id="imageCanvasWrapper" class="image-canvas-wrapper"
+                     data-image-width="@Model.ImageWidth"
+                     data-image-height="@Model.ImageHeight">
+                    <img id="resultImage" src="@Model.ImageDataUrl" alt="Detection image" class="img-fluid rounded border" />
+                    <div id="boundingOverlay" class="bounding-overlay">
+                        @for (var i = 0; i < Model.Detections.Count; i++)
+                        {
+                            var detection = Model.Detections[i];
+                            <div class="detection-box"
+                                 data-x1="@detection.BoundingBox.X1"
+                                 data-y1="@detection.BoundingBox.Y1"
+                                 data-x2="@detection.BoundingBox.X2"
+                                 data-y2="@detection.BoundingBox.Y2">
+                                <span class="detection-label">
+                                    @detection.Label (@(detection.Confidence.ToString("P1")))
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">
+                <h2 class="h5 mb-0">Detections (@Model.Detections.Count)</h2>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Detections.Count == 0)
+                {
+                    <div class="p-3">
+                        <div class="alert alert-info mb-0">No objects were detected for this image.</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Label</th>
+                                    <th>Confidence</th>
+                                    <th>Box (x1,y1,x2,y2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detection in Model.Detections)
+                                {
+                                    <tr>
+                                        <td>@detection.Label</td>
+                                        <td>@detection.Confidence.ToString("P2")</td>
+                                        <td>
+                                            @detection.BoundingBox.X1,
+                                            @detection.BoundingBox.Y1,
+                                            @detection.BoundingBox.X2,
+                                            @detection.BoundingBox.Y2
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const wrapper = document.getElementById("imageCanvasWrapper");
+            const image = document.getElementById("resultImage");
+            const overlay = document.getElementById("boundingOverlay");
+
+            if (!wrapper || !image || !overlay) {
+                return;
+            }
+
+            const originalWidth = Number(wrapper.dataset.imageWidth || 0);
+            const originalHeight = Number(wrapper.dataset.imageHeight || 0);
+
+            function renderBoundingBoxes() {
+                if (!originalWidth || !originalHeight || !image.clientWidth || !image.clientHeight) {
+                    return;
+                }
+
+                overlay.style.width = image.clientWidth + "px";
+                overlay.style.height = image.clientHeight + "px";
+
+                const scaleX = image.clientWidth / originalWidth;
+                const scaleY = image.clientHeight / originalHeight;
+
+                const boxes = overlay.querySelectorAll(".detection-box");
+                boxes.forEach((box) => {
+                    const x1 = Number(box.dataset.x1 || 0);
+                    const y1 = Number(box.dataset.y1 || 0);
+                    const x2 = Number(box.dataset.x2 || 0);
+                    const y2 = Number(box.dataset.y2 || 0);
+
+                    box.style.left = (x1 * scaleX) + "px";
+                    box.style.top = (y1 * scaleY) + "px";
+                    box.style.width = ((x2 - x1) * scaleX) + "px";
+                    box.style.height = ((y2 - y1) * scaleY) + "px";
+                });
+            }
+
+            image.addEventListener("load", renderBoundingBoxes);
+            window.addEventListener("resize", renderBoundingBoxes);
+
+            if (image.complete) {
+                renderBoundingBoxes();
+            }
+        })();
+    </script>
+}
