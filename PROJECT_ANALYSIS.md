@@ -358,7 +358,7 @@ Công thức:
 ### Workflow cơ bản
 1. Chuẩn bị `train/` và `test/` (XML + ảnh).
 2. Chạy:
-   - `dotnet run -- --maxTrainImages 300 --epochs 6 --maxTemplatesPerClass 220 --scoreThreshold 0.78 --strideRatio 0.2 --scales 0.8,1.0,1.2 --nmsIou 0.3`
+   - `dotnet run -- --maxTrainImages 300 --epochs 6 --maxTemplatesPerClass 150 --scoreThreshold 0.5 --strideRatio 0.5 --scales 0.8,1.0,1.2 --nmsIou 0.3`
 3. Xem tổng kết Precision/Recall/F1/PredictionRate.
 4. Điều chỉnh tham số:
    - Nếu FP cao: tăng `scoreThreshold`, giảm scales, siết `nmsIou`.

@@ -11,6 +11,8 @@ internal sealed class Program
     static void Main(string[] args)
     {
         var config = DetectorConfig.FromArgs(args);
+        var modelName = GetArg(args, "modelName") ?? "ObjectDetectionModel";
+        var modelVersion = GetArg(args, "modelVersion") ?? "1.0.0";
         Console.WriteLine("=== Basic Object Detection (.NET 9 / OpenCV) ===");
         Console.WriteLine(config);
 
@@ -40,6 +42,17 @@ internal sealed class Program
         {
             Console.WriteLine("Khong tao duoc template nao tu train set. Kiem tra lai anh va annotation.");
             return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(config.ExportModelPath))
+        {
+            var exportedPath = ModelSnapshotExporter.Export(
+                model,
+                config,
+                config.ExportModelPath,
+                modelName,
+                modelVersion);
+            Console.WriteLine($"Model snapshot da duoc xuat ra: {exportedPath}");
         }
 
         var evaluator = new Evaluator(DefaultEvalIouThreshold);
@@ -118,5 +131,26 @@ internal sealed class Program
 
         var best = detections[0];
         Console.WriteLine($"Top-1: label={best.Label}, tiLe={best.Score * 100:F2}%");
+    }
+
+    private static string? GetArg(string[] args, string key)
+    {
+        var pattern = $"--{key}";
+        for (var i = 0; i < args.Length; i++)
+        {
+            if (!string.Equals(args[i], pattern, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (i + 1 < args.Length && !args[i + 1].StartsWith("--", StringComparison.Ordinal))
+            {
+                return args[i + 1];
+            }
+
+            return "true";
+        }
+
+        return null;
     }
 }

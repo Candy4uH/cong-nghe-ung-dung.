@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: object-detection-api
+    runtime: docker
+    rootDir: Object-Detection
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:10000
+      - key: ObjectDetection__ModelFilePath
+        value: model/object-detection-model.json

@@ -7,13 +7,20 @@ internal sealed record DetectorConfig(
     string TrainDir,
     string TestDir,
     string? PredictImagePath,
+    string? ExportModelPath,
     int Epochs,
     int MaxTemplatesPerClass,
     int MaxTrainImages,
     double[] Scales,
     double StrideRatio,
     double ScoreThreshold,
-    double NmsIouThreshold)
+    double NmsIouThreshold,
+    int SimilarityTopK,
+    int HardNegativeSamplesPerImage,
+    int MaxHardNegativesPerClass,
+    double HardNegativeWeight,
+    bool EnableThresholdCalibration,
+    int MaxDetectionsPerImage)
 {
     public static DetectorConfig FromArgs(string[] args)
     {
@@ -56,13 +63,20 @@ internal sealed record DetectorConfig(
             TrainDir: trainDir,
             TestDir: testDir,
             PredictImagePath: map.TryGetValue("predictImage", out var predictImage) ? Path.GetFullPath(predictImage) : null,
+            ExportModelPath: map.TryGetValue("exportModel", out var exportModel) ? Path.GetFullPath(exportModel) : null,
             Epochs: Math.Max(1, GetInt(map, "epochs", 4)),
             MaxTemplatesPerClass: Math.Max(20, GetInt(map, "maxTemplatesPerClass", 150)),
             MaxTrainImages: GetInt(map, "maxTrainImages", 300),
             Scales: scales,
             StrideRatio: GetDouble(map, "strideRatio", 0.2),
             ScoreThreshold: GetDouble(map, "scoreThreshold", 0.70),
-            NmsIouThreshold: GetDouble(map, "nmsIou", 0.35));
+            NmsIouThreshold: GetDouble(map, "nmsIou", 0.35),
+            SimilarityTopK: Math.Max(1, GetInt(map, "topK", 5)),
+            HardNegativeSamplesPerImage: Math.Max(0, GetInt(map, "hardNegSamples", 10)),
+            MaxHardNegativesPerClass: Math.Max(0, GetInt(map, "maxHardNegPerClass", 200)),
+            HardNegativeWeight: Math.Clamp(GetDouble(map, "hardNegWeight", 0.35), 0.0, 0.9),
+            EnableThresholdCalibration: GetBool(map, "calibrateThreshold", true),
+            MaxDetectionsPerImage: Math.Clamp(GetInt(map, "maxDetections", 30), 1, 100));
     }
 
     public override string ToString()
@@ -71,13 +85,20 @@ internal sealed record DetectorConfig(
             $"trainDir           : {TrainDir}",
             $"testDir            : {TestDir}",
             $"predictImage       : {PredictImagePath ?? "(none)"}",
+            $"exportModel        : {ExportModelPath ?? "(none)"}",
             $"epochs             : {Epochs}",
             $"maxTemplates/class : {MaxTemplatesPerClass}",
             $"maxTrainImages     : {MaxTrainImages}",
             $"scales             : {string.Join(',', Scales.Select(s => s.ToString("0.##", CultureInfo.InvariantCulture)))}",
             $"strideRatio        : {StrideRatio:0.###}",
             $"scoreThreshold     : {ScoreThreshold:0.###}",
-            $"nmsIou             : {NmsIouThreshold:0.###}");
+            $"nmsIou             : {NmsIouThreshold:0.###}",
+            $"topK               : {SimilarityTopK}",
+            $"hardNegSamples/img : {HardNegativeSamplesPerImage}",
+            $"maxHardNeg/class   : {MaxHardNegativesPerClass}",
+            $"hardNegWeight      : {HardNegativeWeight:0.###}",
+            $"calibrateThreshold : {EnableThresholdCalibration}",
+            $"maxDetections/img  : {MaxDetectionsPerImage}");
     }
 
     private static string GetString(Dictionary<string, string> map, string key, string fallback)
@@ -91,6 +112,16 @@ internal sealed record DetectorConfig(
            double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
             ? parsed
             : fallback;
+
+    private static bool GetBool(Dictionary<string, string> map, string key, bool fallback)
+    {
+        if (!map.TryGetValue(key, out var value))
+        {
+            return fallback;
+        }
+
+        return bool.TryParse(value, out var parsed) ? parsed : fallback;
+    }
 
     private static string ResolveDefaultDataDir(string folderName)
     {

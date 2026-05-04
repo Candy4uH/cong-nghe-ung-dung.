@@ -46,8 +46,7 @@
               "RelativeToolTip": "Evaluator.cs",
               "ViewState": "AgIAACUAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-20T15:11:33.39Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-20T15:11:33.39Z"
             },
             {
               "$type": "Document",
@@ -59,21 +58,19 @@
               "RelativeToolTip": "DetectorConfig.cs",
               "ViewState": "AgIAAGoAAAAAAAAAAAAiwDwAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-20T15:11:00.263Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-20T15:11:00.263Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "Object-Detection",
+              "Title": "Object-Detection.csproj",
               "DocumentMoniker": "D:\\VScode\\CongNghePhanMem\\Object-Detection\\Object-Detection.csproj",
               "RelativeDocumentMoniker": "Object-Detection.csproj",
               "ToolTip": "D:\\VScode\\CongNghePhanMem\\Object-Detection\\Object-Detection.csproj",
               "RelativeToolTip": "Object-Detection.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-03-20T14:31:42.281Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-20T14:31:42.281Z"
             },
             {
               "$type": "Document",
@@ -83,7 +80,7 @@
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "D:\\VScode\\CongNghePhanMem\\Object-Detection\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAABYAAAAAAAAAAAAywC4AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABgAAAAAAAAAAAAywDIAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-20T13:08:46.867Z",
               "EditorCaption": ""

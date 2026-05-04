@@ -19,3 +19,26 @@ D:\VScode\CongNghePhanMem\Object-Detection\obj\Debug\net9.0\refint\Object-Detect
 D:\VScode\CongNghePhanMem\Object-Detection\obj\Debug\net9.0\Object-Detection.pdb
 d:\VScode\CongNghePhanMem\Object-Detection\obj\Debug\net9.0\Object-Detection.genruntimeconfig.cache
 d:\VScode\CongNghePhanMem\Object-Detection\obj\Debug\net9.0\ref\Object-Detection.dll
+D:\VScode\CongNghePhanMem\Object-Detection\obj\Debug\net9.0\Object-Detection.sourcelink.json
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\bin\Debug\net9.0\Object-Detection.exe
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\bin\Debug\net9.0\Object-Detection.deps.json
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\bin\Debug\net9.0\Object-Detection.runtimeconfig.json
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\bin\Debug\net9.0\Object-Detection.dll
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\bin\Debug\net9.0\Object-Detection.pdb
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\bin\Debug\net9.0\OpenCvSharp.dll
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\bin\Debug\net9.0\runtimes\win-x64\native\OpenCvSharpExtern.dll
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\bin\Debug\net9.0\runtimes\win-x64\native\opencv_videoio_ffmpeg4100_64.dll
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\bin\Debug\net9.0\runtimes\win-x86\native\OpenCvSharpExtern.dll
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\bin\Debug\net9.0\runtimes\win-x86\native\opencv_videoio_ffmpeg4100.dll
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\Object-Detection.csproj.AssemblyReference.cache
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\Object-Detection.GeneratedMSBuildEditorConfig.editorconfig
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\Object-Detection.AssemblyInfoInputs.cache
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\Object-Detection.AssemblyInfo.cs
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\Object-Detection.csproj.CoreCompileInputs.cache
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\Object-Detection.sourcelink.json
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\Object-D.206EFBF9.Up2Date
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\Object-Detection.dll
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\refint\Object-Detection.dll
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\Object-Detection.pdb
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\Object-Detection.genruntimeconfig.cache
+D:\STUDY\cong nghe ung dung\bt3\Object-Detection bt3\Object-Detection\obj\Debug\net9.0\ref\Object-Detection.dll

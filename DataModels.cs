@@ -21,7 +21,9 @@ internal sealed record TemplateFeature(string Label, float[] Histogram, double W
 internal sealed record DetectorModel(
     IReadOnlyList<TemplateFeature> Templates,
     IReadOnlyDictionary<string, (double W, double H)> AvgSizeByLabel,
-    IReadOnlyDictionary<string, float[]> PrototypeByLabel);
+    IReadOnlyDictionary<string, float[]> PrototypeByLabel,
+    IReadOnlyDictionary<string, float[]> NegativePrototypeByLabel,
+    IReadOnlyDictionary<string, double> ThresholdByLabel);
 
 internal sealed record EvalResult(int TruePositive, int FalsePositive, int FalseNegative)
 {

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Object-Detection")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b2fb4016327b9632295269b54f0c7556b40b995c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Object-Detection")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Object-Detection")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,0 +1,26 @@
+@hostAddress = http://localhost:5161
+
+### Health check
+GET {{hostAddress}}/api/v1/health
+Accept: application/json
+
+###
+
+### Model info
+GET {{hostAddress}}/api/v1/model/info
+Accept: application/json
+
+###
+
+### Detect image (replace path with a real local image)
+POST {{hostAddress}}/api/v1/detection/detect
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="sample.jpg"
+Content-Type: image/jpeg
+
+< ./sample.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
