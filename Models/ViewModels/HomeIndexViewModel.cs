@@ -23,5 +23,9 @@ namespace Object_Detection_ASP.NETMVC.Models.ViewModels
         public Dictionary<string, string> AdditionalModelInfo { get; set; } = new();
 
         public string? ModelInfoErrorMessage { get; set; }
+
+        public List<FruitInfoCardViewModel> FeaturedFruits { get; set; } = [];
+
+        public string? ExternalFruitApiErrorMessage { get; set; }
     }
 }

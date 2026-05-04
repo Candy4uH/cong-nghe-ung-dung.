@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Object_Detection_ASP.NETMVC.Models.Api;
 using Object_Detection_ASP.NETMVC.Models;
 using Object_Detection_ASP.NETMVC.Models.ViewModels;
@@ -12,11 +13,19 @@ namespace Object_Detection_ASP.NETMVC.Controllers
     public class HomeController : Controller
     {
         private readonly IObjectDetectionApiClient _apiClient;
+        private readonly IFruitInfoApiClient _fruitInfoApiClient;
+        private readonly FruitInfoApiOptions _fruitInfoApiOptions;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IObjectDetectionApiClient apiClient, ILogger<HomeController> logger)
+        public HomeController(
+            IObjectDetectionApiClient apiClient,
+            IFruitInfoApiClient fruitInfoApiClient,
+            IOptions<FruitInfoApiOptions> fruitInfoApiOptions,
+            ILogger<HomeController> logger)
         {
             _apiClient = apiClient;
+            _fruitInfoApiClient = fruitInfoApiClient;
+            _fruitInfoApiOptions = fruitInfoApiOptions.Value;
             _logger = logger;
         }
 
@@ -29,7 +38,7 @@ namespace Object_Detection_ASP.NETMVC.Controllers
                 var healthResponse = await _apiClient.GetHealthAsync(cancellationToken);
                 viewModel.HealthStatus = healthResponse.Status;
                 viewModel.HealthMessage = healthResponse.Message;
-                viewModel.HealthTimestamp = healthResponse.Timestamp;
+                viewModel.HealthTimestamp = healthResponse.ModelLoadedAtUtc;
             }
             catch (ObjectDetectionApiException exception)
             {
@@ -48,17 +57,43 @@ namespace Object_Detection_ASP.NETMVC.Controllers
             {
                 var modelInfoResponse = await _apiClient.GetModelInfoAsync(cancellationToken);
                 viewModel.ModelName = modelInfoResponse.ModelName;
-                viewModel.ModelVersion = modelInfoResponse.Version;
-                viewModel.ModelFramework = modelInfoResponse.Framework;
-                viewModel.ModelDescription = modelInfoResponse.Description;
+                viewModel.ModelVersion = modelInfoResponse.ModelVersion;
+                viewModel.ModelFramework = "Custom object detection runtime";
+                viewModel.ModelDescription = BuildModelDescription(modelInfoResponse);
                 viewModel.Labels = modelInfoResponse.Labels ?? [];
                 viewModel.AdditionalModelInfo = ToDisplayDictionary(
                     modelInfoResponse.AdditionalData,
                     "modelName",
-                    "version",
-                    "framework",
-                    "description",
+                    "modelVersion",
+                    "templatesByLabel",
+                    "scoreThreshold",
+                    "scales",
+                    "thresholdByLabel",
                     "labels");
+
+                if (modelInfoResponse.TemplatesByLabel?.Count > 0)
+                {
+                    viewModel.AdditionalModelInfo["templatesByLabel"] = string.Join(
+                        ", ",
+                        modelInfoResponse.TemplatesByLabel.Select(item => $"{item.Key}:{item.Value}"));
+                }
+
+                if (modelInfoResponse.ScoreThreshold.HasValue)
+                {
+                    viewModel.AdditionalModelInfo["scoreThreshold"] = modelInfoResponse.ScoreThreshold.Value.ToString("0.##");
+                }
+
+                if (modelInfoResponse.Scales?.Count > 0)
+                {
+                    viewModel.AdditionalModelInfo["scales"] = string.Join(", ", modelInfoResponse.Scales.Select(item => item.ToString("0.##")));
+                }
+
+                if (modelInfoResponse.ThresholdByLabel?.Count > 0)
+                {
+                    viewModel.AdditionalModelInfo["thresholdByLabel"] = string.Join(
+                        ", ",
+                        modelInfoResponse.ThresholdByLabel.Select(item => $"{item.Key}:{item.Value:0.##}"));
+                }
             }
             catch (ObjectDetectionApiException exception)
             {
@@ -71,6 +106,42 @@ namespace Object_Detection_ASP.NETMVC.Controllers
             {
                 _logger.LogError(exception, "Unexpected error while loading model info endpoint.");
                 viewModel.ModelInfoErrorMessage = "Unexpected error happened while loading model information.";
+            }
+
+            try
+            {
+                var fruitNames = _fruitInfoApiOptions.FeaturedFruits
+                    .Where(item => !string.IsNullOrWhiteSpace(item))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Take(3)
+                    .ToList();
+
+                foreach (var fruitName in fruitNames)
+                {
+                    var fruitResponse = await _fruitInfoApiClient.GetFruitAsync(fruitName, cancellationToken);
+                    viewModel.FeaturedFruits.Add(new FruitInfoCardViewModel
+                    {
+                        Name = fruitResponse.Name,
+                        Family = fruitResponse.Family,
+                        Order = fruitResponse.Order,
+                        Genus = fruitResponse.Genus,
+                        Calories = fruitResponse.Nutritions?.Calories ?? 0,
+                        Fat = fruitResponse.Nutritions?.Fat ?? 0,
+                        Sugar = fruitResponse.Nutritions?.Sugar ?? 0,
+                        Carbohydrates = fruitResponse.Nutritions?.Carbohydrates ?? 0,
+                        Protein = fruitResponse.Nutritions?.Protein ?? 0
+                    });
+                }
+            }
+            catch (ExternalFruitApiException exception)
+            {
+                _logger.LogWarning(exception, "External fruit API call failed.");
+                viewModel.ExternalFruitApiErrorMessage = BuildFriendlyExternalFruitApiErrorMessage(exception);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Unexpected error while loading external fruit API.");
+                viewModel.ExternalFruitApiErrorMessage = "Unexpected error happened while loading third-party fruit information.";
             }
 
             return View(viewModel);
@@ -99,6 +170,14 @@ namespace Object_Detection_ASP.NETMVC.Controllers
             };
         }
 
+        private static string BuildModelDescription(ModelInfoResponseDto modelInfoResponse)
+        {
+            var labelCount = modelInfoResponse.Labels?.Count ?? 0;
+            var templateCount = modelInfoResponse.TemplatesByLabel?.Values.Sum() ?? 0;
+
+            return $"Labels: {labelCount}, templates: {templateCount}.";
+        }
+
         private static Dictionary<string, string> ToDisplayDictionary(
             Dictionary<string, JsonElement>? source,
             params string[] ignoredKeys)
@@ -122,6 +201,18 @@ namespace Object_Detection_ASP.NETMVC.Controllers
             }
 
             return result;
+        }
+
+        private static string BuildFriendlyExternalFruitApiErrorMessage(ExternalFruitApiException exception)
+        {
+            return exception.StatusCode switch
+            {
+                HttpStatusCode.NotFound => "The third-party fruit API did not recognize one of the configured fruit names.",
+                HttpStatusCode.TooManyRequests => "The third-party fruit API rate limit was reached. Please try again later.",
+                HttpStatusCode.ServiceUnavailable => "The third-party fruit API is temporarily unavailable.",
+                HttpStatusCode.InternalServerError => "The third-party fruit API encountered an internal error.",
+                _ => "Unable to load fruit nutrition data from the external API right now."
+            };
         }
     }
 }

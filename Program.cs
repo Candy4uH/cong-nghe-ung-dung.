@@ -18,10 +18,27 @@ namespace Object_Detection_ASP.NETMVC
                 .Validate(options => Uri.TryCreate(options.BaseUrl, UriKind.Absolute, out _), "ObjectDetectionApi:BaseUrl must be a valid absolute URL.")
                 .ValidateOnStart();
 
+            builder.Services
+                .AddOptions<FruitInfoApiOptions>()
+                .Bind(builder.Configuration.GetSection(FruitInfoApiOptions.SectionName))
+                .ValidateDataAnnotations()
+                .Validate(options => Uri.TryCreate(options.BaseUrl, UriKind.Absolute, out _), "FruitInfoApi:BaseUrl must be a valid absolute URL.")
+                .ValidateOnStart();
+
             builder.Services.AddHttpClient<IObjectDetectionApiClient, ObjectDetectionApiClient>((serviceProvider, client) =>
             {
                 var apiOptions = serviceProvider
                     .GetRequiredService<Microsoft.Extensions.Options.IOptions<ObjectDetectionApiOptions>>()
+                    .Value;
+
+                client.BaseAddress = new Uri(apiOptions.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(apiOptions.TimeoutSeconds);
+            });
+
+            builder.Services.AddHttpClient<IFruitInfoApiClient, FruitInfoApiClient>((serviceProvider, client) =>
+            {
+                var apiOptions = serviceProvider
+                    .GetRequiredService<Microsoft.Extensions.Options.IOptions<FruitInfoApiOptions>>()
                     .Value;
 
                 client.BaseAddress = new Uri(apiOptions.BaseUrl);

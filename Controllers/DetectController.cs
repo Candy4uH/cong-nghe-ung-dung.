@@ -35,7 +35,7 @@ namespace Object_Detection_ASP.NETMVC.Controllers
         public async Task<IActionResult> Upload(DetectUploadViewModel viewModel, CancellationToken cancellationToken)
         {
             viewModel.MaxUploadBytes = _apiOptions.MaxUploadBytes;
-            viewModel.AllowedExtensionsDisplay = string.Join(", ", _apiOptions.AllowedExtensions);
+            viewModel.AllowedExtensionsDisplay = string.Join(", ", GetAllowedExtensions());
 
             if (viewModel.Image is null || viewModel.Image.Length == 0)
             {
@@ -45,7 +45,7 @@ namespace Object_Detection_ASP.NETMVC.Controllers
 
             var extension = Path.GetExtension(viewModel.Image.FileName);
             if (string.IsNullOrWhiteSpace(extension)
-                || !_apiOptions.AllowedExtensions.Any(item =>
+                || !GetAllowedExtensions().Any(item =>
                     string.Equals(item, extension, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(
@@ -112,8 +112,16 @@ namespace Object_Detection_ASP.NETMVC.Controllers
             return new DetectUploadViewModel
             {
                 MaxUploadBytes = _apiOptions.MaxUploadBytes,
-                AllowedExtensionsDisplay = string.Join(", ", _apiOptions.AllowedExtensions)
+                AllowedExtensionsDisplay = string.Join(", ", GetAllowedExtensions())
             };
+        }
+
+        private IReadOnlyList<string> GetAllowedExtensions()
+        {
+            return _apiOptions.AllowedExtensions
+                .Where(item => !string.IsNullOrWhiteSpace(item))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
         }
 
         private static string FormatFileSize(long bytes)
@@ -124,12 +132,26 @@ namespace Object_Detection_ASP.NETMVC.Controllers
 
         private static string BuildFriendlyErrorMessage(ObjectDetectionApiException exception)
         {
+            if (!string.IsNullOrWhiteSpace(exception.ResponseContent))
+            {
+                if (exception.ResponseContent.Contains("MODEL_NOT_READY", StringComparison.OrdinalIgnoreCase))
+                {
+                    return "Model is not ready on backend API. Please start the API correctly and verify the model file can be loaded.";
+                }
+
+                if (exception.ResponseContent.Contains("INVALID_INPUT", StringComparison.OrdinalIgnoreCase))
+                {
+                    return "The backend rejected the uploaded file as invalid. Please verify image format and size.";
+                }
+            }
+
             return exception.StatusCode switch
             {
                 HttpStatusCode.BadRequest => "The backend rejected this file. Please verify the image and try again.",
                 HttpStatusCode.NotFound => "Detection endpoint was not found on backend API. Please verify ObjectDetectionApi:BaseUrl and API route.",
                 HttpStatusCode.ServiceUnavailable => "Object Detection API is temporarily unavailable. Please retry in a moment.",
                 HttpStatusCode.InternalServerError => "Object Detection API encountered an internal error. Please retry later.",
+                _ when exception.InnerException is not null => "Unable to reach Object Detection API. Please make sure the backend is running on the configured port.",
                 _ => "Unable to process your image right now. Please try again."
             };
         }

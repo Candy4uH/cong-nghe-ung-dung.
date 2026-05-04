@@ -16,13 +16,6 @@ namespace Object_Detection_ASP.NETMVC.Models.Api
         public long MaxUploadBytes { get; set; } = 5 * 1024 * 1024;
 
         [MinLength(1)]
-        public List<string> AllowedExtensions { get; set; } =
-        [
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".bmp",
-            ".webp"
-        ];
+        public List<string> AllowedExtensions { get; set; } = [];
     }
 }
