@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0-jammy AS build
 WORKDIR /src
 
 COPY ["Object-Detection.csproj", "./"]
@@ -8,12 +8,13 @@ RUN dotnet restore "Object-Detection.Api/Object-Detection.Api.csproj"
 COPY . .
 RUN dotnet publish "Object-Detection.Api/Object-Detection.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-jammy AS final
 WORKDIR /app
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libglib2.0-0 \
+        libjpeg-turbo8 \
         libsm6 \
         libxext6 \
         libxrender1 \
