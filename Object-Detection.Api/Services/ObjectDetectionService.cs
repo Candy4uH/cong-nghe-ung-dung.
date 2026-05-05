@@ -65,7 +65,13 @@ public sealed class ObjectDetectionService : IObjectDetectionService
         }
         catch (InvalidOperationException ex)
         {
+            _logger.LogWarning(ex, "Invalid image payload received by detection service.");
             throw new ApiException("INVALID_IMAGE", ex.Message, StatusCodes.Status400BadRequest);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while running object detection.");
+            throw new ApiException("DETECTION_FAILED", ex.Message, StatusCodes.Status500InternalServerError);
         }
     }
 
