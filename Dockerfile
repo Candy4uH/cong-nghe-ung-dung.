@@ -8,7 +8,7 @@ RUN dotnet restore "Object-Detection.Api/Object-Detection.Api.csproj"
 COPY . .
 RUN dotnet publish "Object-Detection.Api/Object-Detection.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-jammy AS final
+FROM mcr.microsoft.com/dotnet/sdk:9.0-jammy AS final
 WORKDIR /app
 
 RUN apt-get update \
